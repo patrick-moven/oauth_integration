@@ -18,27 +18,31 @@ convenience.
 
 ### Android:
 1. Make sure the Google Maven is in your `android/build.gradle` files
-```repositories {
+```
+repositories {
   google()
 }
 ```
 
 2. Make sure the appcompat version in android/app/build.gradle matches the one
 expected by AppAuth
-```dependencies {
+```
+dependencies {
   compile "com.android.support:appcompat-v7:25.3.1"
 }
 ```
 
 3. Update the `compileSdkVersion` to 25 if it's lower than that
-```android {
+```
+android {
   compileSdkVersion 25
 }
 ```
 
 4. To capture the authorization redirect, add the following property to the
 defaultConfig in `android/app/build.gradle`
-```android {
+```
+android {
   defaultConfig {
     manifestPlaceholders = [
       appAuthRedirectScheme: '<your redirect server>'
@@ -47,7 +51,8 @@ defaultConfig in `android/app/build.gradle`
 }
 ```
 When finished, it should look something like this:
-```...
+```
+...
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -67,25 +72,29 @@ android {
 5. Upgrade the version of Gradle by either opening the project in Android Studio
 and performing the suggested upgrade, or by updating the last line of your
 `android/gradle/wrapper` file to include version 4.4
-```distributionUrl=https\://services.gradle.org/distributions/gradle-4.4-all.zip
+```
+distributionUrl=https\://services.gradle.org/distributions/gradle-4.4-all.zip
 ```
 ### iOS:
 1. Use CocoaPods to install AppAuth dependencies. Add a file called `Podfile`
 to your `ios` folder. In this file, add the following lines:
-```platform :ios, '11.0'
+```
+platform :ios, '11.0'
 
 target '<your app name (exactly as in app.json)>' do
  pod 'AppAuth', '>= 0.94'
 end
 ```
 From your terminal,
-```sudo gem install cocoapods
+```
+sudo gem install cocoapods
 cd ios
 pod install
 ```
 
 2. If you intend to support iOS 10 and older, you need to define the supported redirect URL schemes in your `ios/Info.plist` as follows:
-```<key>CFBundleURLTypes</key>
+```
+<key>CFBundleURLTypes</key>
 <array>
   <dict>
     <key>CFBundleURLName</key>
@@ -98,7 +107,8 @@ pod install
 </array>
 ```
 It should look like this:
-```	<key>CFBundleIdentifier</key>
+```
+	<key>CFBundleIdentifier</key>
 	<string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
@@ -120,7 +130,8 @@ You need to retain the auth session, in order to continue the authorization
 flow from the redirect. Add app authorization redirect flow lines to
 `ios/<your app name>/AppDelegate.h` so it looks like this (the added lines have
 a + next to them):
-```#import <UIKit/UIKit.h>
+```
+#import <UIKit/UIKit.h>
 + #import <AppAuth/Appauth.h>
 + #import "RNAppAuthAuthorizationFlowManager.h"
 
@@ -137,13 +148,15 @@ a + next to them):
 ```
 Also these lines need to be added to `ios/<your app name>/AppDelegate.m` after
 `@implementation AppDelegate`:
-```-(void)setCurrentAuthorizationFlowSession:(id<OIDAuthorizationFlowSession>)session {
+```
+-(void)setCurrentAuthorizationFlowSession:(id<OIDAuthorizationFlowSession>)session {
    // retain session for further use
    _currentSession = session;
 }
 ```
 and these lines right before `@end`:
-```- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
+```
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
   BOOL shouldOpenUrl = [_currentSession resumeAuthorizationFlowWithURL:url];
   _currentSession = nil;
   return shouldOpenUrl;
